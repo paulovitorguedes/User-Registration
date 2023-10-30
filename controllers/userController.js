@@ -136,4 +136,40 @@ class UserController {
     //     fileReader.readAsDataURL(file);
 
     // } //Close getPhoto
+
+
+
+
+    addLineUser(objectUser) {
+
+        let tr = document.createElement('tr');
+    
+        tr.innerHTML = `
+            <td><img src="${objectUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
+            <td>${objectUser.name}</td>
+            <td>${objectUser.email}</td>
+            <td>${objectUser.admin}</td>
+            <td>${objectUser.birth}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+            </td>
+        `;
+    
+        this._tableEl.appendChild(tr);
+    
+        // this._tableEl.innerHTML += `
+        // <tr>
+        //     <td><img src="${objectUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
+        //     <td>${objectUser.name}</td>
+        //     <td>${objectUser.email}</td>
+        //     <td>${objectUser.admin}</td>
+        //     <td>${objectUser.birth}</td>
+        //     <td>
+        //         <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+        //         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+        //     </td>
+        // </tr>
+
+    }// Close addLineUser
 }
