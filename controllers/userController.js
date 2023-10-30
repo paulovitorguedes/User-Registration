@@ -5,7 +5,7 @@ class UserController {
         this._formEl = document.getElementById(formId);
         this._tableEl = document.getElementById(tableId);
 
-        //this.onSubmitUser();
+        this.onSubmitUser();
 
     }
 
