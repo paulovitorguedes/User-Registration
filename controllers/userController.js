@@ -6,7 +6,7 @@ class UserController {
         this._tableEl = document.getElementById(tableId);
 
         //this.onSubmitUser();
-        
+
     }
 
 
@@ -44,4 +44,66 @@ class UserController {
         );
 
     } // Close getValuesUser
+
+
+
+
+
+    getPhoto() {
+        //O promise é executado de forma assincrona 
+        return new Promise((resolve, reject) => {
+
+            //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
+            let fileReader = new FileReader();
+
+            let element = [...this._formEl.elements].filter(e => {
+                if (e.name === 'photo') {
+                    return e;
+                }
+            });
+
+            //Função de callBack para quando o PC finalizar a leituta do arquivo
+            fileReader.onload = () => {
+
+                resolve(fileReader.result);
+
+            }
+
+            fileReader.onerror = (e) => {
+
+                reject(e);
+            }
+
+
+            let file = element[0].files[0];
+
+            if (file) {
+                fileReader.readAsDataURL(file);
+            } else {
+                resolve('dist/img/boxed-bg.jpg');
+            }
+        });
+    } //Close getPhoto
+
+    // getPhoto(calback) {
+    //     //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
+    //     let fileReader = new FileReader();
+
+    //     let element = [...this._formEl.elements].filter(e => {
+    //         if (e.name === 'photo') {
+    //             return e;
+    //         }
+    //     })  
+
+    //     //Função de callBack para quando o PC finalizar a leituta do arquivo
+    //     fileReader.onload = () => {
+
+    //         calback(fileReader.result);
+
+    //     }
+
+    //     let file = element[0].files[0];
+    //     fileReader.readAsDataURL(file);
+
+    // } //Close getPhoto
 }
