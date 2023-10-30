@@ -45,7 +45,37 @@ class UserController {
 
     } // Close getValuesUser
 
+    //Criando o evento para o botão submit do formulário de usuários
+    onSubmitUser() {
+        this._formEl.addEventListener('submit', e => {
+            //Para o evento pré definido 
+            e.preventDefault();
 
+            //valuesUser recebe o object User
+            let valueUser = this.getValuesUser();
+
+            //ajusta a URL do arquivo, removendo o \\fakepath
+            // this.getPhoto(content => {
+            //     valueUser._photo = content;
+            //     addLineUser(valueUser);
+            // });
+
+            //ajusta a URL do arquivo, removendo o \\fakepath
+            this.getPhoto().then(
+                content => {
+
+                    valueUser._photo = content;
+                    this.addLineUser(valueUser);
+
+                }, error => {
+
+                    console.error(error);
+                }
+            );
+
+
+        });
+    } // Close onSubmit
 
 
 
