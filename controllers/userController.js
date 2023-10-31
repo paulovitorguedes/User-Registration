@@ -1,14 +1,47 @@
 class UserController {
 
     constructor(formId, tableId) {
-
         this._formEl = document.getElementById(formId);
         this._tableEl = document.getElementById(tableId);
 
         this.onSubmitUser();
-
     }
 
+
+    //Criando o evento para o botão submit do formulário de usuários
+    onSubmitUser() {
+        this._formEl.addEventListener('submit', e => {
+            //Para o evento pré definido 
+            e.preventDefault();
+
+            //desabilita o btn submit para não ocorrer disparos simultaneos
+            let btnSubmit = this._formEl.querySelector("[type=submit]");
+            btnSubmit.disabled = true;
+
+            //valuesUser recebe o object User
+            let valueUser = this.getValuesUser();
+
+            //ajusta a URL do arquivo, removendo o \\fakepath
+            // this.getPhoto(content => {
+            //     valueUser._photo = content;
+            //     addLineUser(valueUser);
+            // });
+
+            //ajusta a URL do arquivo, removendo o \\fakepath
+            this.getPhoto().then(
+                content => {
+                    valueUser._photo = content;
+                    this.addLineUser(valueUser);
+                }, error => {
+                    console.error(error);
+                }
+            );
+            
+            this._formEl.reset();
+            btnSubmit.disabled = false;
+
+        });
+    } // Close onSubmit
 
     //Retorna o objeto com os valores do usuário
     getValuesUser() {
@@ -45,39 +78,6 @@ class UserController {
 
     } // Close getValuesUser
 
-    //Criando o evento para o botão submit do formulário de usuários
-    onSubmitUser() {
-        this._formEl.addEventListener('submit', e => {
-            //Para o evento pré definido 
-            e.preventDefault();
-
-            //valuesUser recebe o object User
-            let valueUser = this.getValuesUser();
-
-            //ajusta a URL do arquivo, removendo o \\fakepath
-            // this.getPhoto(content => {
-            //     valueUser._photo = content;
-            //     addLineUser(valueUser);
-            // });
-
-            //ajusta a URL do arquivo, removendo o \\fakepath
-            this.getPhoto().then(
-                content => {
-
-                    valueUser._photo = content;
-                    this.addLineUser(valueUser);
-
-                }, error => {
-
-                    console.error(error);
-                }
-            );
-
-
-        });
-    } // Close onSubmit
-
-
 
     getPhoto() {
         //O promise é executado de forma assincrona 
@@ -94,48 +94,42 @@ class UserController {
 
             //Função de callBack para quando o PC finalizar a leituta do arquivo
             fileReader.onload = () => {
-
                 resolve(fileReader.result);
-
             }
 
             fileReader.onerror = (e) => {
-
                 reject(e);
             }
 
-
             let file = element[0].files[0];
-
             if (file) {
                 fileReader.readAsDataURL(file);
             } else {
                 resolve('dist/img/boxed-bg.jpg');
             }
         });
+
+
+        // getPhoto(calback) {
+        //     //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
+        //     let fileReader = new FileReader();
+        //     let element = [...this._formEl.elements].filter(e => {
+        //         if (e.name === 'photo') {
+        //             return e;
+        //         }
+        //     })  
+        //     //Função de callBack para quando o PC finalizar a leituta do arquivo
+        //     fileReader.onload = () => {
+        //         calback(fileReader.result);
+        //     }
+        //     let file = element[0].files[0];
+        //     fileReader.readAsDataURL(file);
+        // } //Close getPhoto
+
+
     } //Close getPhoto
 
-    // getPhoto(calback) {
-    //     //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
-    //     let fileReader = new FileReader();
 
-    //     let element = [...this._formEl.elements].filter(e => {
-    //         if (e.name === 'photo') {
-    //             return e;
-    //         }
-    //     })  
-
-    //     //Função de callBack para quando o PC finalizar a leituta do arquivo
-    //     fileReader.onload = () => {
-
-    //         calback(fileReader.result);
-
-    //     }
-
-    //     let file = element[0].files[0];
-    //     fileReader.readAsDataURL(file);
-
-    // } //Close getPhoto
 
 
 
