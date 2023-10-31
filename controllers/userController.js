@@ -143,7 +143,7 @@ class UserController {
             <td>${objectUser.name}</td>
             <td>${objectUser.email}</td>
             <td>${objectUser.admin ? "yes" : "no"}</td>
-            <td>${objectUser.birth}</td>
+            <td>${Utils.dateFormat(objectUser.register)}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                 <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
