@@ -19,7 +19,15 @@ class UserController {
             btnSubmit.disabled = true;
 
             //valuesUser recebe o object User
-            let valueUser = this.getValuesUser();
+            let valueUser;
+            if (this.getValuesUser()) {
+                valueUser = this.getValuesUser();
+
+            } else {
+                btnSubmit.disabled = false;
+                return false;
+            }
+
 
             //ajusta a URL do arquivo, removendo o \\fakepath
             // this.getPhoto(content => {
@@ -36,7 +44,7 @@ class UserController {
                     console.error(error);
                 }
             );
-            
+
             this._formEl.reset();
             btnSubmit.disabled = false;
 
@@ -45,13 +53,19 @@ class UserController {
 
     //Retorna o objeto com os valores do usuário
     getValuesUser() {
-
+        let isValid = true;
         const user = {}; //JSON USER
 
         //Utiliza-se o spred criando um Array para funcionalidade do forEach
         [...this._formEl.elements].forEach(e => {
 
-            if (e.name == "gender") {
+            if (["name", "email", "password"].indexOf(e.name) > -1 && !e.value) {
+
+                //console.dir(e)
+                e.parentElement.classList.add("has-error");
+                isValid = false;
+
+            } else if (e.name == "gender") {
 
                 if (e.checked) { user[e.name] = e.value; }
 
@@ -65,16 +79,21 @@ class UserController {
 
         });
 
-        return new User(
-            user.name,
-            user.gender,
-            user.birth,
-            user.country,
-            user.email,
-            user.password,
-            user.photo,
-            user.admin
-        );
+        if (isValid) {
+            return new User(
+                user.name,
+                user.gender,
+                user.birth,
+                user.country,
+                user.email,
+                user.password,
+                user.photo,
+                user.admin
+            );
+        } else {
+            return false;
+        }
+
 
     } // Close getValuesUser
 
