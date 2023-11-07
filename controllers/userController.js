@@ -157,6 +157,10 @@ class UserController {
 
         let tr = document.createElement('tr');
 
+        //? Dataset é uma API WEB permite leitura e escrita em elementos HTML, armazemando apenas String
+        //? No elemento tr será criado um dataset com uma variável denominada user recebendo uma String Json do OsjectUser
+        tr.dataset.user = JSON.stringify(objectUser);
+
         tr.innerHTML = `
             <td><img src="${objectUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
             <td>${objectUser.name}</td>
@@ -170,6 +174,8 @@ class UserController {
         `;
 
         this._tableEl.appendChild(tr);
+
+        this.updateCount();
 
         // this._tableEl.innerHTML += `
         // <tr>
@@ -185,4 +191,21 @@ class UserController {
         // </tr>
 
     }// Close addLineUser
+
+
+
+    "updateCount"() {
+
+        let numberUser = 0;
+        let numberAdmin = 0;
+
+        [...this._tableEl.children].forEach(e => {
+
+            numberUser++;
+            if (JSON.parse(e.dataset.user)._admin) numberAdmin++;
+        });
+
+        document.querySelector("#number-users").innerHTML = numberUser;
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+    }
 }
