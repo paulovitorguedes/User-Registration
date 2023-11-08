@@ -1,32 +1,49 @@
 class UserController {
 
-    constructor(formId, tableId) {
-        this._formEl = document.getElementById(formId);
-        this._tableEl = document.getElementById(tableId);
+    constructor(panelUserCreateEl, panelUserUpdateEl, tableUsersEl) {
 
-        this.onSubmitUser();
+        this._formCreateEl = panelUserCreateEl.querySelector("[role='form']");
+        this._formUpdateEl = panelUserUpdateEl.querySelector("[role='form']");
+        this._tableEl = tableUsersEl;
+        this._panelCreate = panelUserCreateEl;
+        this._panelUpdate = panelUserUpdateEl;       
+        
+        this.showPanelUserCreate();
+        this.onEdit();
+        this.onSubmit();
+
     }
 
+    
+    onEdit() {
 
-    //Criando o evento para o botão submit do formulário de usuários
-    onSubmitUser() {
-        this._formEl.addEventListener('submit', e => {
-            //Para o evento pré definido 
-            e.preventDefault();
+        //Adiciona o evento para o botão canci=elar do painel editar usuário
+        let btnCancel = this._formUpdateEl.querySelector("[type='button']");
+        btnCancel.addEventListener("click", e => {
+            this.showPanelUserCreate();
+        });
+    }
+ 
+    //Adiciona o evento para o botão submit do painel cadastrar usuário
+    onSubmit() {
+
+        //Evento do Btn Submit "Salvar" do painel novo usuário
+        this._formCreateEl.addEventListener('submit', btn => {
+
+            //Para o evento pré definido do btn 
+            btn.preventDefault();
 
             //desabilita o btn submit para não ocorrer disparos simultaneos
-            let btnSubmit = this._formEl.querySelector("[type=submit]");
+            let btnSubmit = this._formCreateEl.querySelector("[type=submit]");
             btnSubmit.disabled = true;
 
-            //valuesUser recebe o object User
-            let valueUser;
-            if (this.getValuesUser()) {
-                valueUser = this.getValuesUser();
+            //valuesUser recebe o object User ou o valor "false" no caso de não validação do formulário
+            let valueUser = this.getValuesUser();
+            if (!valueUser) {
 
-            } else {
                 btnSubmit.disabled = false;
                 return false;
-            }
+            } 
 
 
             //ajusta a URL do arquivo, removendo o \\fakepath
@@ -45,7 +62,7 @@ class UserController {
                 }
             );
 
-            this._formEl.reset();
+            this._formCreateEl.reset();
             btnSubmit.disabled = false;
 
         });
@@ -57,11 +74,11 @@ class UserController {
         const user = {}; //JSON USER
 
         //Utiliza-se o spred criando um Array para funcionalidade do forEach
-        [...this._formEl.elements].forEach(e => {
+        [...this._formCreateEl.elements].forEach(e => {
 
             if (["name", "email", "password"].indexOf(e.name) > -1 && !e.value) {
 
-                //console.dir(e)
+                //adiciona a classe .has-error ao elemento PAI
                 e.parentElement.classList.add("has-error");
                 isValid = false;
 
@@ -105,7 +122,7 @@ class UserController {
             //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
             let fileReader = new FileReader();
 
-            let element = [...this._formEl.elements].filter(e => {
+            let element = [...this._formCreateEl.elements].filter(e => {
                 if (e.name === 'photo') {
                     return e;
                 }
@@ -132,7 +149,7 @@ class UserController {
         // getPhoto(calback) {
         //     //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
         //     let fileReader = new FileReader();
-        //     let element = [...this._formEl.elements].filter(e => {
+        //     let element = [...this._formCreateEl.elements].filter(e => {
         //         if (e.name === 'photo') {
         //             return e;
         //         }
@@ -147,10 +164,6 @@ class UserController {
 
 
     } //Close getPhoto
-
-
-
-
 
 
     addLineUser(objectUser) {
@@ -168,11 +181,16 @@ class UserController {
             <td>${objectUser.admin ? "yes" : "no"}</td>
             <td>${Utils.dateFormat(objectUser.register)}</td>
             <td>
-                <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
+                <button type="button" class="btn btn-danger btn-xs btn-flat btn-del">Excluir</button>
             </td>
         `;
 
+        tr.querySelector(".btn-edit").addEventListener("click", e => {
+            this.showPanelUserUpdate();
+        });
+
+        
         this._tableEl.appendChild(tr);
 
         this.updateCount();
@@ -192,9 +210,8 @@ class UserController {
 
     }// Close addLineUser
 
-
-
-    "updateCount"() {
+    
+    updateCount() {
 
         let numberUser = 0;
         let numberAdmin = 0;
@@ -207,5 +224,18 @@ class UserController {
 
         document.querySelector("#number-users").innerHTML = numberUser;
         document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+    }
+
+
+    showPanelUserCreate() {
+
+        this._panelCreate.style.display = "block";
+        this._panelUpdate.style.display = "none";
+    }
+
+    showPanelUserUpdate() {
+
+        this._panelCreate.style.display = "none";
+        this._panelUpdate.style.display = "block";
     }
 }
