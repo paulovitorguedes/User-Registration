@@ -6,15 +6,15 @@ class UserController {
         this._formUpdateEl = panelUserUpdateEl.querySelector("[role='form']");
         this._tableEl = tableUsersEl;
         this._panelCreate = panelUserCreateEl;
-        this._panelUpdate = panelUserUpdateEl;       
-        
+        this._panelUpdate = panelUserUpdateEl;
+
         this.showPanelUserCreate();
         this.onEdit();
         this.onSubmit();
 
     }
 
-    
+
     onEdit() {
 
         //Adiciona o evento para o botão canci=elar do painel editar usuário
@@ -23,7 +23,7 @@ class UserController {
             this.showPanelUserCreate();
         });
     }
- 
+
     //Adiciona o evento para o botão submit do painel cadastrar usuário
     onSubmit() {
 
@@ -43,7 +43,7 @@ class UserController {
 
                 btnSubmit.disabled = false;
                 return false;
-            } 
+            }
 
 
             //ajusta a URL do arquivo, removendo o \\fakepath
@@ -187,10 +187,39 @@ class UserController {
         `;
 
         tr.querySelector(".btn-edit").addEventListener("click", e => {
+
+            let objectUserJson = JSON.parse(tr.dataset.user);
             this.showPanelUserUpdate();
+
+            for (const key in objectUserJson) {
+                
+                let fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "]");
+               
+                if (fieldEl) {
+                    switch (fieldEl.type) {
+                        case 'file':
+                            continue;
+                        
+                        case 'radio':
+                            fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "][value=" + objectUserJson[key] + "]");
+                            fieldEl.checked = true;
+                            break;
+
+                        case 'checkbox':
+                            fieldEl.checked = objectUserJson[key];
+                            break;
+
+                        default:
+                            fieldEl.value = objectUserJson[key];
+                            break;
+                    }
+                }
+
+                
+            }
         });
 
-        
+
         this._tableEl.appendChild(tr);
 
         this.updateCount();
@@ -210,7 +239,7 @@ class UserController {
 
     }// Close addLineUser
 
-    
+
     updateCount() {
 
         let numberUser = 0;
