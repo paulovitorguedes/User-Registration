@@ -14,15 +14,77 @@ class UserController {
 
     }
 
-
+    //Adiciona o evento para o botão submit do painel Editar usuário
     onEdit() {
 
-        //Adiciona o evento para o botão canci=elar do painel editar usuário
+        //Adiciona o evento para o botão cancelar do painel editar usuário
         let btnCancel = this._formUpdateEl.querySelector("[type='button']");
         btnCancel.addEventListener("click", e => {
             this.showPanelUserCreate();
         });
+
+
+
+        //Evento do Btn Submit "Salvar" do painel Editar usuário
+        this._formUpdateEl.addEventListener('submit', btn => {
+
+            //Para o evento pré definido do btn 
+            btn.preventDefault();
+
+            //desabilita o btn submit para não ocorrer disparos simultaneos
+            let btnSubmit = this._formUpdateEl.querySelector("[type=submit]");
+            btnSubmit.disabled = true;
+
+
+            //valuesUser recebe o object User ou o valor "false" no caso de não validação do formulário
+            let valueUser = this.getValuesUser(this._formUpdateEl);
+            if (!valueUser) {
+
+                btnSubmit.disabled = false;
+                return false;
+            }
+
+            //Cada tr da tabela possui um btn editar e ao ser clicado será criado um dataset trIndex no elemento form com o indice dessa tr e sendo recuperado nesse momento 
+            //a variável tr será o elemento da tr correspondente ao indice indicado 
+            let tr = this._tableEl.rows[this._formUpdateEl.dataset.trIndex];
+
+            //altera o dataset user da tr com as novas alterações 
+            tr.dataset.user = JSON.stringify(valueUser);
+
+            //Altera o innerHTML da tr com as novas informações do objeto valueUser
+            tr.innerHTML = `
+                <td><img src="${valueUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
+                <td>${valueUser.name}</td>
+                <td>${valueUser.email}</td>
+                <td>${valueUser.admin ? "yes" : "no"}</td>
+                <td>${Utils.dateFormat(valueUser.register)}</td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
+                    <button type="button" class="btn btn-danger btn-xs btn-flat btn-del">Excluir</button>
+                </td>
+            `;
+
+            //Por se tratar de um novo element, será necessário criar um novo evento para os btn Editar e Excluir
+            this.addEventTr(tr);
+
+            //contabiliza os usuários cadastrados 
+            this.updateCount();
+
+            //retorna o painel Novo Usuário
+            this.showPanelUserCreate();
+
+            //reseta o from updade user
+            this._formUpdateEl.reset();
+
+            btnSubmit.disabled = false;
+
+        });
     }
+
+
+
+
+
 
     //Adiciona o evento para o botão submit do painel cadastrar usuário
     onSubmit() {
@@ -38,7 +100,7 @@ class UserController {
             btnSubmit.disabled = true;
 
             //valuesUser recebe o object User ou o valor "false" no caso de não validação do formulário
-            let valueUser = this.getValuesUser();
+            let valueUser = this.getValuesUser(this._formCreateEl);
             if (!valueUser) {
 
                 btnSubmit.disabled = false;
@@ -68,13 +130,17 @@ class UserController {
         });
     } // Close onSubmit
 
+
+
+
+
     //Retorna o objeto com os valores do usuário
-    getValuesUser() {
+    getValuesUser(formEl) {
         let isValid = true;
         const user = {}; //JSON USER
 
         //Utiliza-se o spred criando um Array para funcionalidade do forEach
-        [...this._formCreateEl.elements].forEach(e => {
+        [...formEl.elements].forEach(e => {
 
             if (["name", "email", "password"].indexOf(e.name) > -1 && !e.value) {
 
@@ -113,6 +179,11 @@ class UserController {
 
 
     } // Close getValuesUser
+
+
+
+
+
 
 
     getPhoto() {
@@ -167,11 +238,11 @@ class UserController {
 
 
     addLineUser(objectUser) {
-
+        //Cria o elemento tr 
         let tr = document.createElement('tr');
 
         //? Dataset é uma API WEB permite leitura e escrita em elementos HTML, armazemando apenas String
-        //? No elemento tr será criado um dataset com uma variável denominada user recebendo uma String Json do OsjectUser
+        //? Para cada elemento tr será criado um dataset com uma variável denominada user recebendo uma String Json do OsjectUser
         tr.dataset.user = JSON.stringify(objectUser);
 
         tr.innerHTML = `
@@ -186,42 +257,10 @@ class UserController {
             </td>
         `;
 
-        tr.querySelector(".btn-edit").addEventListener("click", e => {
 
-            let objectUserJson = JSON.parse(tr.dataset.user);
-            this.showPanelUserUpdate();
-
-            for (const key in objectUserJson) {
-                
-                let fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "]");
-               
-                if (fieldEl) {
-                    switch (fieldEl.type) {
-                        case 'file':
-                            continue;
-                        
-                        case 'radio':
-                            fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "][value=" + objectUserJson[key] + "]");
-                            fieldEl.checked = true;
-                            break;
-
-                        case 'checkbox':
-                            fieldEl.checked = objectUserJson[key];
-                            break;
-
-                        default:
-                            fieldEl.value = objectUserJson[key];
-                            break;
-                    }
-                }
-
-                
-            }
-        });
-
+        this.addEventTr(tr);
 
         this._tableEl.appendChild(tr);
-
         this.updateCount();
 
         // this._tableEl.innerHTML += `
@@ -240,6 +279,59 @@ class UserController {
     }// Close addLineUser
 
 
+
+
+
+
+    addEventTr(tr) {
+
+        //Cria o evento pra o btn editar usuário situado em cada tr com os dados do usuário
+        tr.querySelector(".btn-edit").addEventListener("click", e => {
+
+            let objectUserJson = JSON.parse(tr.dataset.user);
+            this.showPanelUserUpdate();
+
+            //Adiciona um dataset ao elemento form update com o atributo trIndex contendo o index da tr selecionada ao clicar no btn editar
+            this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iiniciando com 0
+
+
+            //Preencher o form Update com os dados do usuário selecionado na tabela com o btm editar, ajustando os fields file da foto, radio de gender e checkbox de adm
+            for (const key in objectUserJson) {
+
+                let fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "]");
+
+                if (fieldEl) {
+                    switch (fieldEl.type) {
+                        case 'file':
+                            continue;
+
+                        case 'radio':
+                            fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "][value=" + objectUserJson[key] + "]");
+                            fieldEl.checked = true;
+                            break;
+
+                        case 'checkbox':
+                            fieldEl.checked = objectUserJson[key];
+                            break;
+
+                        default:
+                            fieldEl.value = objectUserJson[key];
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+    //contabilisa usuários e adm cadastrados 
     updateCount() {
 
         let numberUser = 0;
@@ -253,9 +345,16 @@ class UserController {
 
         document.querySelector("#number-users").innerHTML = numberUser;
         document.querySelector("#number-users-admin").innerHTML = numberAdmin;
-    }
+    } // close updateCount
 
 
+
+
+
+
+
+
+    //Alterna os paineis novo usuário e editar usuário
     showPanelUserCreate() {
 
         this._panelCreate.style.display = "block";
