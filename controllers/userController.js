@@ -8,26 +8,40 @@ class UserController {
         this._panelCreate = panelUserCreateEl;
         this._panelUpdate = panelUserUpdateEl;
 
-        // this.onPrevewPhoto(this._formCreateEl);
+        this.onPrevewPhoto(this._formCreateEl);
         this.showPanelUserCreate();
         this.onEdit();
         this.onSubmit();
 
     }
 
-    // onPrevewPhoto(form) {
-    //     let inputFileEl = form.querySelector('[type=file]');
-    //     let photoEl = form.getElementsByTagName('img')[0];
 
-    //     this.getPhoto(inputFileEl).then(
-    //         content => {
-    //             photoEl.src = content;
-    //         }, error => {
-    //             console.error(error);
-    //         }
-    //     );
 
-    // }
+
+
+    onPrevewPhoto(form) {
+
+        let inputFileEl = form.querySelector('[type=file]');
+
+        inputFileEl.addEventListener('change', () => {
+
+            let photoEl = form.getElementsByTagName('img')[0];
+
+            this.getPhoto(inputFileEl).then(
+                content => {
+                    photoEl.src = content;
+                }, error => {
+                    console.error(error);
+                }
+            );
+        });
+
+    }
+
+
+
+
+
 
     //Adiciona o evento para os btn do painel Editar usuário
     onEdit() {
@@ -130,7 +144,8 @@ class UserController {
             // });
 
             //ajusta a URL do arquivo, removendo o \\fakepath
-            this.getPhoto().then(
+            let inputFileEl = this._formCreateEl.querySelector('[type=file]');
+            this.getPhoto(inputFileEl).then(
                 content => {
                     valueUser._photo = content;
                     this.addLineUser(valueUser);
@@ -140,6 +155,7 @@ class UserController {
             );
 
             this._formCreateEl.reset();
+            this._formCreateEl.getElementsByTagName('img')[0].src = 'dist/img/avatar_user.png';
             btnSubmit.disabled = false;
 
         });
@@ -201,7 +217,7 @@ class UserController {
 
 
 
-    getPhoto() {
+    getPhoto(inputFileEl) {
         //O promise é executado de forma assincrona 
         return new Promise((resolve, reject) => {
 
@@ -210,11 +226,12 @@ class UserController {
             let fileReader = new FileReader();
 
             //Recupera o elemento input type="file" onde name === 'photo'. Atribuindo a variável element
-            let element = [...this._formCreateEl.elements].filter(e => {
-                if (e.name === 'photo') {
-                    return e;
-                }
-            });
+            // let element = [...this._formCreateEl.elements].filter(e => {
+            //     if (e.name === 'photo') {
+            //         console.log(e);
+            //         return e;
+            //     }
+            // });
 
             //Função de callBack para quando o PC finalizar a leituta do arquivo
             fileReader.onload = () => {
@@ -225,7 +242,7 @@ class UserController {
                 reject(e);
             }
 
-            let file = element[0].files[0];
+            let file = inputFileEl.files[0];
             if (file) {
                 fileReader.readAsDataURL(file);
             } else {
