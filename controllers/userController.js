@@ -8,13 +8,28 @@ class UserController {
         this._panelCreate = panelUserCreateEl;
         this._panelUpdate = panelUserUpdateEl;
 
+        // this.onPrevewPhoto(this._formCreateEl);
         this.showPanelUserCreate();
         this.onEdit();
         this.onSubmit();
 
     }
 
-    //Adiciona o evento para o botão submit do painel Editar usuário
+    // onPrevewPhoto(form) {
+    //     let inputFileEl = form.querySelector('[type=file]');
+    //     let photoEl = form.getElementsByTagName('img')[0];
+
+    //     this.getPhoto(inputFileEl).then(
+    //         content => {
+    //             photoEl.src = content;
+    //         }, error => {
+    //             console.error(error);
+    //         }
+    //     );
+
+    // }
+
+    //Adiciona o evento para os btn do painel Editar usuário
     onEdit() {
 
         //Adiciona o evento para o botão cancelar do painel editar usuário
@@ -191,8 +206,10 @@ class UserController {
         return new Promise((resolve, reject) => {
 
             //API do FileReader usada para ler o conteúdo do arquivo selecionado e criar a URL
+            // Cria um objeto FileReader para ler o arquivo
             let fileReader = new FileReader();
 
+            //Recupera o elemento input type="file" onde name === 'photo'. Atribuindo a variável element
             let element = [...this._formCreateEl.elements].filter(e => {
                 if (e.name === 'photo') {
                     return e;
@@ -212,7 +229,7 @@ class UserController {
             if (file) {
                 fileReader.readAsDataURL(file);
             } else {
-                resolve('dist/img/boxed-bg.jpg');
+                resolve('dist/img/avatar_user.png');
             }
         });
 
@@ -282,7 +299,7 @@ class UserController {
 
 
 
-
+    //Adiciona o 
     addEventTr(tr) {
 
         //Cria o evento pra o btn editar usuário situado em cada tr com os dados do usuário
@@ -290,7 +307,7 @@ class UserController {
 
             let objectUserJson = JSON.parse(tr.dataset.user);
             this.showPanelUserUpdate();
-
+            console.log(objectUserJson);
             //Adiciona um dataset ao elemento form update com o atributo trIndex contendo o index da tr selecionada ao clicar no btn editar
             this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iiniciando com 0
 
@@ -299,7 +316,7 @@ class UserController {
             for (const key in objectUserJson) {
 
                 let fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "]");
-
+                console.log(fieldEl);
                 if (fieldEl) {
                     switch (fieldEl.type) {
                         case 'file':
