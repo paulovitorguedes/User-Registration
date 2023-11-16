@@ -78,7 +78,10 @@ class UserController {
             let tr = this._tableEl.rows[this._formUpdateEl.dataset.trIndex];
 
             //altera o dataset user da tr com as novas alterações 
+            let imgAvatarEl = this._formUpdateEl.getElementsByTagName('img')[0];
+            valueUser.photo = imgAvatarEl.getAttribute('src');
             tr.dataset.user = JSON.stringify(valueUser);
+            
 
             //Altera o innerHTML da tr com as novas informações do objeto valueUser
             tr.innerHTML = `
@@ -104,7 +107,7 @@ class UserController {
 
             //reseta o from updade user
             this._formUpdateEl.reset();
-            this._formUpdateEl.getElementsByTagName('img')[0].src = 'dist/img/avatar_user.png';
+            imgAvatarEl.src = 'dist/img/avatar_user.png';
             btnSubmit.disabled = false;
 
         });
@@ -324,22 +327,23 @@ class UserController {
 
             let objectUserJson = JSON.parse(tr.dataset.user);
             this.showPanelUserUpdate();
-            console.log(objectUserJson);
 
             //Adiciona um dataset ao elemento form update com o atributo trIndex contendo o index da tr selecionada ao clicar no btn editar
-            this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iiniciando com 0
+            this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iniciando com 0
 
+            //Adiciona o eento ao elemento input=file apresentando a imagem do avatar no form após ser selecionada
             this.onPrevewPhoto(this._formUpdateEl);
 
             //Preencher o form Update com os dados do usuário selecionado na tabela com o btm editar, ajustando os fields file da foto, radio de gender e checkbox de adm
             for (const key in objectUserJson) {
 
                 let fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "]");
-                console.log(fieldEl);
                 if (fieldEl) {
                     switch (fieldEl.type) {
                         case 'file':
-                            continue;
+                            let photoEl = this._formUpdateEl.getElementsByTagName('img')[0];
+                            photoEl.src = objectUserJson[key];
+                            break;
 
                         case 'radio':
                             fieldEl = this._formUpdateEl.querySelector("[name=" + key.replace("_", "") + "][value=" + objectUserJson[key] + "]");
