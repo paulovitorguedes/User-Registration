@@ -18,7 +18,7 @@ class UserController {
 
 
 
-
+    // Apresenta uma imagem do avatar selecionado no form indicado
     onPrevewPhoto(form) {
 
         let inputFileEl = form.querySelector('[type=file]');
@@ -36,7 +36,7 @@ class UserController {
             );
         });
 
-    }
+    } // close onPrevewPhoto
 
 
 
@@ -104,11 +104,11 @@ class UserController {
 
             //reseta o from updade user
             this._formUpdateEl.reset();
-
+            this._formUpdateEl.getElementsByTagName('img')[0].src = 'dist/img/avatar_user.png';
             btnSubmit.disabled = false;
 
         });
-    }
+    } //close onEdit
 
 
 
@@ -316,7 +316,7 @@ class UserController {
 
 
 
-    //Adiciona o 
+    //Adiciona os eventos dos btn de cada tr da table
     addEventTr(tr) {
 
         //Cria o evento pra o btn editar usuário situado em cada tr com os dados do usuário
@@ -325,9 +325,11 @@ class UserController {
             let objectUserJson = JSON.parse(tr.dataset.user);
             this.showPanelUserUpdate();
             console.log(objectUserJson);
+
             //Adiciona um dataset ao elemento form update com o atributo trIndex contendo o index da tr selecionada ao clicar no btn editar
             this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iiniciando com 0
 
+            this.onPrevewPhoto(this._formUpdateEl);
 
             //Preencher o form Update com os dados do usuário selecionado na tabela com o btm editar, ajustando os fields file da foto, radio de gender e checkbox de adm
             for (const key in objectUserJson) {
@@ -355,7 +357,7 @@ class UserController {
                 }
             }
         });
-    }
+    } //close addEventTr
 
 
 
