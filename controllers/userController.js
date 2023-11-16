@@ -322,6 +322,15 @@ class UserController {
     //Adiciona os eventos dos btn de cada tr da table
     addEventTr(tr) {
 
+        tr.querySelector(".btn-del").addEventListener('click', () => {
+
+                if (confirm('Deseja realmemte excluir este usuário? ')) {
+                    tr.remove();
+                    this.updateCount();
+                }
+        });
+
+
         //Cria o evento pra o btn editar usuário situado em cada tr com os dados do usuário
         tr.querySelector(".btn-edit").addEventListener("click", e => {
 
