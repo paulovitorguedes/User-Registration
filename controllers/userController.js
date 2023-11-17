@@ -152,10 +152,13 @@ class UserController {
                 content => {
                     valueUser._photo = content;
                     this.addLineUser(valueUser);
+                    this.addStorageUser(valueUser);
                 }, error => {
                     console.error(error);
                 }
             );
+
+
 
             this._formCreateEl.reset();
             this._formCreateEl.getElementsByTagName('img')[0].src = 'dist/img/avatar_user.png';
@@ -316,6 +319,18 @@ class UserController {
     }// Close addLineUser
 
 
+    addStorageUser(dataUser) {
+
+        let user = [];
+
+        if (sessionStorage.getItem('keyUsers')) {
+            user = JSON.parse(sessionStorage.getItem('keyUsers'));
+        }
+
+        user.push(dataUser);
+        sessionStorage.setItem('keyUsers', JSON.stringify(user));
+        
+    }
 
 
 
