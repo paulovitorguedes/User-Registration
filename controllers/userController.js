@@ -16,6 +16,9 @@ class UserController {
     }
 
 
+    selectStorageUser() {
+
+    }
 
 
     // Apresenta uma imagem do avatar selecionado no form indicado
@@ -319,18 +322,16 @@ class UserController {
     }// Close addLineUser
 
 
+
+    //Adiciona os dados do usuário na Session Storage
     addStorageUser(dataUser) {
 
-        let user = [];
+        let users = this.isStorageUser();
 
-        if (sessionStorage.getItem('keyUsers')) {
-            user = JSON.parse(sessionStorage.getItem('keyUsers'));
-        }
-
-        user.push(dataUser);
-        sessionStorage.setItem('keyUsers', JSON.stringify(user));
+        users.push(dataUser);
+        sessionStorage.setItem('keyUsers', JSON.stringify(users));
         
-    }
+    }//close addStorageUser
 
 
 
@@ -413,6 +414,21 @@ class UserController {
 
 
 
+
+
+
+    //Retorna um Array de User object
+    isStorageUser() {
+
+        let users = [];
+
+        if (sessionStorage.getItem('keyUsers')) {
+            users = JSON.parse(sessionStorage.getItem('keyUsers'));
+        }
+
+        return users;
+
+    } //close isStorageUser
 
 
 
