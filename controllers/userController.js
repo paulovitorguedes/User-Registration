@@ -12,13 +12,27 @@ class UserController {
         this.showPanelUserCreate();
         this.onEdit();
         this.onSubmit();
+        this.selectStorageUser();
 
     }
 
 
+
+    //Seleciona o JSON de users, cria um obj Users para cada usuário e add na tabela 
     selectStorageUser() {
 
+        let users = this.isStorageUser();
+       
+        users.forEach(e => {
+            const user = new User();
+            user.loadJsonUser(e);
+            this.addLineUser(user);
+        });    
     }
+
+
+
+
 
 
     // Apresenta uma imagem do avatar selecionado no form indicado

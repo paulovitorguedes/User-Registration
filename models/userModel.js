@@ -14,6 +14,16 @@ class User {
     }
 
 
+
+    loadJsonUser(objJson) {
+        for (const key in objJson) {
+
+            key == '_register' ? this[key] = new Date(objJson[key]) : this[key] = objJson[key];
+        }
+
+    }
+
+
     get register() {
         return this._register;
     }
@@ -21,58 +31,60 @@ class User {
     get name() {
         return this._name;
     }
-    set name(name){
+    set name(name) {
         this._name = name;
     }
 
     get gender() {
         return this._gender;
     }
-    set gender(gender){
+    set gender(gender) {
         this._gender = gender;
     }
 
     get birth() {
         return this._birth;
     }
-    set birth(birth){
+    set birth(birth) {
         this._birth = birth;
     }
 
     get country() {
         return this._country;
     }
-    set country(country){
+    set country(country) {
         this._country = country;
     }
 
     get email() {
         return this._email;
     }
-    set email(email){
+    set email(email) {
         this._email = email;
     }
 
     get password() {
         return this._password;
     }
-    set password(password){
+    set password(password) {
         this._password = password;
     }
 
     get photo() {
         return this._photo;
     }
-    set photo(photo){
+    set photo(photo) {
         this._photo = photo;
     }
 
     get admin() {
         return this._admin;
     }
-    set admin(admin){
+    set admin(admin) {
         this._admin = admin;
     }
+
+
 
 
 }
