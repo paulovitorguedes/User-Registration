@@ -12,26 +12,21 @@ class UserController {
         this.showPanelUserCreate();
         this.onEdit();
         this.onSubmit();
-        this.selectStorageUser();
+        this.initialize();
 
     }
 
 
 
-    //Seleciona o JSON de users, cria um obj Users para cada usuário e add na tabela 
-    selectStorageUser() {
 
-        let users = this.isStorageUser();
-       
-        users.forEach(e => {
+    initialize() {
+        let usersJson = UserModel.selectStorageUser();
+        usersJson.forEach(e => {
             const user = new User();
             user.loadJsonUser(e);
             this.addLineUser(user);
-        });    
+        });
     }
-
-
-
 
 
 
@@ -98,7 +93,7 @@ class UserController {
             let imgAvatarEl = this._formUpdateEl.getElementsByTagName('img')[0];
             valueUser.photo = imgAvatarEl.getAttribute('src');
             tr.dataset.user = JSON.stringify(valueUser);
-            
+
 
             //Altera o innerHTML da tr com as novas informações do objeto valueUser
             tr.innerHTML = `
@@ -169,7 +164,7 @@ class UserController {
                 content => {
                     valueUser._photo = content;
                     this.addLineUser(valueUser);
-                    this.addStorageUser(valueUser);
+                    UserModel.addStorageUser(valueUser);
                 }, error => {
                     console.error(error);
                 }
@@ -294,6 +289,11 @@ class UserController {
     } //Close getPhoto
 
 
+
+
+
+
+
     addLineUser(objectUser) {
         //Cria o elemento tr 
         let tr = document.createElement('tr');
@@ -337,16 +337,6 @@ class UserController {
 
 
 
-    //Adiciona os dados do usuário na Session Storage
-    addStorageUser(dataUser) {
-
-        let users = this.isStorageUser();
-
-        users.push(dataUser);
-        sessionStorage.setItem('keyUsers', JSON.stringify(users));
-        
-    }//close addStorageUser
-
 
 
     //Adiciona os eventos dos btn de cada tr da table
@@ -354,10 +344,10 @@ class UserController {
 
         tr.querySelector(".btn-del").addEventListener('click', () => {
 
-                if (confirm('Deseja realmemte excluir este usuário? ')) {
-                    tr.remove();
-                    this.updateCount();
-                }
+            if (confirm('Deseja realmemte excluir este usuário? ')) {
+                tr.remove();
+                this.updateCount();
+            }
         });
 
 
@@ -431,18 +421,7 @@ class UserController {
 
 
 
-    //Retorna um Array de User object
-    isStorageUser() {
 
-        let users = [];
-
-        if (sessionStorage.getItem('keyUsers')) {
-            users = JSON.parse(sessionStorage.getItem('keyUsers'));
-        }
-
-        return users;
-
-    } //close isStorageUser
 
 
 
