@@ -96,17 +96,7 @@ class UserController {
 
 
             //Altera o innerHTML da tr com as novas informações do objeto valueUser
-            tr.innerHTML = `
-                <td><img src="${valueUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
-                <td>${valueUser.name}</td>
-                <td>${valueUser.email}</td>
-                <td>${valueUser.admin ? "yes" : "no"}</td>
-                <td>${Utils.dateFormat(valueUser.register)}</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
-                    <button type="button" class="btn btn-danger btn-xs btn-flat btn-del">Excluir</button>
-                </td>
-            `;
+            tr.innerHTML = this.elementTr(valueUser);
 
             //Por se tratar de um novo element, será necessário criar um novo evento para os btn Editar e Excluir
             this.addEventTr(tr);
@@ -295,29 +285,22 @@ class UserController {
 
 
     addLineUser(objectUser) {
-        //Cria o elemento tr 
+        //Cria o element tr 
         let tr = document.createElement('tr');
 
         //? Dataset é uma API WEB permite leitura e escrita em elementos HTML, armazemando apenas String
         //? Para cada elemento tr será criado um dataset com uma variável denominada user recebendo uma String Json do OsjectUser
         tr.dataset.user = JSON.stringify(objectUser);
+        
+        //Cria o element tr com as tags HTML
+        tr.innerHTML = this.elementTr(objectUser);
 
-        tr.innerHTML = `
-            <td><img src="${objectUser.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
-            <td>${objectUser.name}</td>
-            <td>${objectUser.email}</td>
-            <td>${objectUser.admin ? "yes" : "no"}</td>
-            <td>${Utils.dateFormat(objectUser.register)}</td>
-            <td>
-                <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat btn-del">Excluir</button>
-            </td>
-        `;
-
-
+        //Adiciona os eventos dos btn de cada tr da table
         this.addEventTr(tr);
 
         this._tableEl.appendChild(tr);
+
+        //contabilisa usuários e adm cadastrados
         this.updateCount();
 
         // this._tableEl.innerHTML += `
@@ -346,6 +329,7 @@ class UserController {
 
             if (confirm('Deseja realmemte excluir este usuário? ')) {
                 tr.remove();
+                 //contabilisa usuários e adm cadastrados
                 this.updateCount();
             }
         });
@@ -419,8 +403,20 @@ class UserController {
 
 
 
-
-
+    //Cria o elemento tr com as tags HTML
+    elementTr(userObject) {
+        return `
+            <td><img src="${userObject.photo}" alt="Avatar Image" class="img-circle img-sm"></td>
+            <td>${userObject.name}</td>
+            <td>${userObject.email}</td>
+            <td>${userObject.admin ? "yes" : "no"}</td>
+            <td>${Utils.dateFormat(userObject.register)}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
+                <button type="button" class="btn btn-danger btn-xs btn-flat btn-del">Excluir</button>
+            </td>
+        `;
+    } // close elementTr
 
 
 
@@ -434,6 +430,7 @@ class UserController {
         this._panelUpdate.style.display = "none";
     }
 
+    //Alterna os paineis novo usuário e editar usuário
     showPanelUserUpdate() {
 
         this._panelCreate.style.display = "none";
