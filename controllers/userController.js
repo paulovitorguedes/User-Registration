@@ -141,6 +141,12 @@ class UserController {
                 return false;
             }
 
+            if (!this.checkRegisteredEmail(valueUser.email)) {
+                
+                alert('O email já encontra-se cadastrado em nosso sistema');
+                btnSubmit.disabled = false;
+                return false;
+            }
 
             //ajusta a URL do arquivo, removendo o \\fakepath
             // this.getPhoto(content => {
@@ -173,7 +179,7 @@ class UserController {
 
 
 
-    //Retorna o objeto com os valores do usuário
+    //Retorna o objeto com os valores do usuário e validando o preenchimento do form
     getValuesUser(formEl) {
         let isValid = true;
         const user = {}; //JSON USER
@@ -181,9 +187,10 @@ class UserController {
         //Utiliza-se o spred criando um Array para funcionalidade do forEach
         [...formEl.elements].forEach(e => {
 
+            // Se e.name for algum item da lista e estiver vazio
             if (["name", "email", "password"].indexOf(e.name) > -1 && !e.value) {
 
-                //adiciona a classe .has-error ao elemento PAI
+                //adiciona a classe .has-error ao elemento PAI, uma classe do bootstrap 
                 e.parentElement.classList.add("has-error");
                 isValid = false;
 
@@ -291,7 +298,7 @@ class UserController {
         //? Dataset é uma API WEB permite leitura e escrita em elementos HTML, armazemando apenas String
         //? Para cada elemento tr será criado um dataset com uma variável denominada user recebendo uma String Json do OsjectUser
         tr.dataset.user = JSON.stringify(objectUser);
-        
+
         //Cria o element tr com as tags HTML
         tr.innerHTML = this.elementTr(objectUser);
 
@@ -329,7 +336,7 @@ class UserController {
 
             if (confirm('Deseja realmemte excluir este usuário? ')) {
                 tr.remove();
-                 //contabilisa usuários e adm cadastrados
+                //contabilisa usuários e adm cadastrados
                 this.updateCount();
             }
         });
@@ -338,13 +345,15 @@ class UserController {
         //Cria o evento pra o btn editar usuário situado em cada tr com os dados do usuário
         tr.querySelector(".btn-edit").addEventListener("click", e => {
 
+            //Recebe o object user no qual foi setado anteriormente no dataset de cada tr com os dados do usuário 
             let objectUserJson = JSON.parse(tr.dataset.user);
+            //Altera o painel do form de usario
             this.showPanelUserUpdate();
 
             //Adiciona um dataset ao elemento form update com o atributo trIndex contendo o index da tr selecionada ao clicar no btn editar
             this._formUpdateEl.dataset.trIndex = tr.sectionRowIndex; //? sectionRowIndex contabiliza cada linha da tabela iniciando com 0
 
-            //Adiciona o eento ao elemento input=file apresentando a imagem do avatar no form após ser selecionada
+            //Adiciona o evento ao elemento input=file apresentando a imagem na tag img do avatar no form após ser selecionada
             this.onPrevewPhoto(this._formUpdateEl);
 
             //Preencher o form Update com os dados do usuário selecionado na tabela com o btm editar, ajustando os fields file da foto, radio de gender e checkbox de adm
@@ -378,7 +387,23 @@ class UserController {
 
 
 
+    checkRegisteredEmail(email) {
 
+        let isValid = true;
+        let usersJson = UserModel.selectStorageUser();
+
+        usersJson.forEach(e => {
+            if (e._email == email) {
+
+                isValid = false;
+                let emailEl = this._formCreateEl.querySelector('[name=email]');
+                emailEl.parentElement.classList.add("has-error");
+            }
+        });
+
+        return isValid;
+
+    }
 
 
 
